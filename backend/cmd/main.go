@@ -18,12 +18,17 @@ func main() {
 	r.GET("/health", httpHandler.HealthCheck)
 	r.POST("/api/register", httpHandler.Register)
 	r.POST("/api/login", httpHandler.Login)
-	// r.GET("/api/userid", httpHandler.GetuserId)
+
+	err := global.DB.AutoMigrate(&database.User{}, &database.PersonalChat{})
+	if err != nil {
+		panic("failed to migrate database")
+	}
 
 	authorized := r.Group("/")
 	authorized.Use(tools.AuthMiddleware())
 	{
 		authorized.GET("/api/:userid", httpHandler.GetuserId)
+		authorized.GET("/api/chats", httpHandler.GetChatsuserId)
 	}
 
 	if err := r.Run(); err != nil {

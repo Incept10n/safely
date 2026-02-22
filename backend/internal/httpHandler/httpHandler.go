@@ -38,5 +38,9 @@ func Login(c *gin.Context) {
 func GetuserId(c *gin.Context) {
 
 	services.HandleGetuserId(global.DB, c)
+}
 
+func GetChatsuserId(c *gin.Context) {
+
+	services.HandleGetChatsuserId(global.DB, c)
 }

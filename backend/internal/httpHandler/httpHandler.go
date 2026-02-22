@@ -20,9 +20,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	services.HandleRegister(reqBodyJson, global.DB)
-
-	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	services.HandleRegister(reqBodyJson, global.DB, c)
 }
 
 // func Login(c *gin.Context) {

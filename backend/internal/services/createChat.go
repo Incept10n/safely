@@ -2,9 +2,12 @@ package services
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"safelyBackend/internal/database"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -16,6 +19,26 @@ func HandleCreateChat(reqBodyJson CreateChatStruct, db *gorm.DB, c *gin.Context)
 	senderId, err := strconv.ParseUint(senderIdNotUint, 10, 64)
 
 	ctx := context.Background()
+
+	authHeader := c.GetHeader("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	partsJWT := strings.Split(tokenString, ".")
+	payload := partsJWT[1]
+	decodedPayload, err := base64.StdEncoding.DecodeString(payload)
+
+	if err != nil {
+		fmt.Errorf("failed to decode payload: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "not ok", "error": err})
+		return
+	}
+
+	partsPayload := strings.Split(string(decodedPayload), `"`)
+	userIdJwt := partsPayload[6]
+	userIdJwtFormated := userIdJwt[1 : len(userIdJwt)-1]
+	if userIdJwtFormated != fmt.Sprint(senderId) {
+		c.JSON(http.StatusForbidden, gin.H{"status": "not ok", "error": "sender id and provided sender id are differs"})
+		return
+	}
 
 	nonceUser, err_1 := gorm.G[database.User](db).Where("nonce = ?", nonce).First(ctx)
 	if err_1 != nil {

@@ -44,3 +44,14 @@ func GetChatsuserId(c *gin.Context) {
 
 	services.HandleGetChatsuserId(global.DB, c)
 }
+
+func CreateChat(c *gin.Context) {
+	var reqBodyJson services.CreateChatStruct
+
+	if err := c.ShouldBindJSON(&reqBodyJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "not ok", "error": err.Error()})
+		return
+	}
+
+	services.HandleCreateChat(reqBodyJson, global.DB, c)
+}

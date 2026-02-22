@@ -23,16 +23,17 @@ func Register(c *gin.Context) {
 	services.HandleRegister(reqBodyJson, global.DB, c)
 }
 
-// func Login(c *gin.Context) {
-// 	var reqBodyJson services.Login
+func Login(c *gin.Context) {
+	var reqBodyJson services.LoginStruct
 
-// 	if err := c.ShouldBindJSON(&reqBodyJson); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"status": "not ok", "error": err.Error()})
-// 		return
-// 	}
+	if err := c.ShouldBindJSON(&reqBodyJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "not ok", "error": err.Error()})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
-// }
+	services.HandleLogin(reqBodyJson, global.DB, c)
+
+}
 
 // func GetuserId(c *gin.Context) {
 // 	// TODO: Extract user ID from JWT token or session

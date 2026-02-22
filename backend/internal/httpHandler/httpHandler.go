@@ -35,10 +35,8 @@ func Login(c *gin.Context) {
 
 }
 
-// func GetuserId(c *gin.Context) {
-// 	// TODO: Extract user ID from JWT token or session
-// 	// This is a placeholder implementation
-// 	userId := "12345" // Replace with actual user ID retrieval logic
+func GetuserId(c *gin.Context) {
 
-// 	c.JSON(http.StatusOK, gin.H{"userid": userId})
-// }
+	services.HandleGetuserId(global.DB, c)
+
+}

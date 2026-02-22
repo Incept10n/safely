@@ -12,9 +12,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func HandleGetChatsuserId(db *gorm.DB, c *gin.Context) {
+func HandleGetChatMessages(db *gorm.DB, c *gin.Context) {
 
-	userId := c.Query("userid")
+	chatid := c.Param("chatid")
+	fmt.Println(chatid)
+	fmt.Println("////////////")
 
 	ctx := context.Background()
 
@@ -22,35 +24,34 @@ func HandleGetChatsuserId(db *gorm.DB, c *gin.Context) {
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	partsJWT := strings.Split(tokenString, ".")
 	payload := partsJWT[1]
-	decodedPayload, err := base64.StdEncoding.DecodeString(payload)
+	decodedPayload, err_1 := base64.StdEncoding.DecodeString(payload)
 
-	if err != nil {
-		fmt.Errorf("failed to decode payload: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"status": "not ok", "error": err})
+	if err_1 != nil {
+		fmt.Errorf("failed to decode payload: %v", err_1)
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "not ok", "error": err_1})
 		return
 	}
 
 	partsPayload := strings.Split(string(decodedPayload), `"`)
 	userIdJwt := partsPayload[6]
 	userIdJwtFormated := userIdJwt[1 : len(userIdJwt)-1]
-	if userIdJwtFormated != userId {
-		c.JSON(http.StatusForbidden, gin.H{"status": "not ok", "error": "wrong userid"})
-		return
-	}
 
-	chats, err := gorm.G[database.PersonalChat](db).Where("user1 = ? OR user2 = ?", userId, userId).Find(ctx)
+	chat, err_2 := gorm.G[database.PersonalChat](db).Where("(id = ? AND user1 = ?) OR (id = ? AND user2 = ?)", chatid, userIdJwtFormated, chatid, userIdJwtFormated).First(ctx)
 
-	if err == nil {
+	if err_2 == nil {
 		c.JSON(http.StatusOK, gin.H{
-			"status": "success",
-			"chats":  chats,
+			"status":   "success",
+			"chat_id":  chat.ID,
+			"user1":    chat.User1,
+			"user2":    chat.User2,
+			"messages": chat.Messages,
 		})
 		return
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
 			"message": "database error occurred",
-			"error":   err.Error(),
+			"error":   err_2.Error(),
 		})
 		return
 	}

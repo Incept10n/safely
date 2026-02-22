@@ -27,9 +27,10 @@ func main() {
 	authorized := r.Group("/")
 	authorized.Use(tools.AuthMiddleware())
 	{
-		authorized.GET("/api/:userid", httpHandler.GetuserId)
 		authorized.GET("/api/chats", httpHandler.GetChatsuserId)
 		authorized.POST("/api/create-chat", httpHandler.CreateChat)
+		authorized.GET("/api/chat/:chatid", httpHandler.GetChatMessages)
+		authorized.GET("/api/:userid", httpHandler.GetuserId)
 	}
 
 	if err := r.Run(); err != nil {

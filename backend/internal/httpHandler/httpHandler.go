@@ -55,3 +55,8 @@ func CreateChat(c *gin.Context) {
 
 	services.HandleCreateChat(reqBodyJson, global.DB, c)
 }
+
+func GetChatMessages(c *gin.Context) {
+
+	services.HandleGetChatMessages(global.DB, c)
+}

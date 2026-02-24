@@ -1,6 +1,9 @@
-import type { Nullable, UID } from "@/shared/types";
+import type { Nullable, UID } from '@/shared/types';
 
-export type Action = {};
+export type Action = {
+  setContacts: (contacts: Person[]) => void;
+  setCurrentChat: (chat: Nullable<Chat>) => void;
+};
 
 export type ChatState = {
   contacts: Person[];
@@ -11,15 +14,16 @@ export type Person = {
   uid: UID;
   name: string;
   profilePicture: string;
+  active: boolean;
 };
 
 export type Chat = {
   messages: Message[];
 };
 
-export type MessageType = "receiving" | "sending";
+export type MessageType = 'incoming' | 'outgoing';
 
 export type Message = {
-  messageType: MessageType;
-  content: string;
+  direction: MessageType;
+  message: string;
 };

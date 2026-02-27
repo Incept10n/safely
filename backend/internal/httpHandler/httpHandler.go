@@ -60,3 +60,8 @@ func GetChatMessages(c *gin.Context) {
 
 	services.HandleGetChatMessages(global.DB, c)
 }
+
+func WebsocketConnection(c *gin.Context) {
+
+	services.HandleWebsocketConnection(global.DB, c)
+}

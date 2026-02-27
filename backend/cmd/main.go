@@ -31,6 +31,7 @@ func main() {
 		authorized.POST("/api/create-chat", httpHandler.CreateChat)
 		authorized.GET("/api/chat/:chatid", httpHandler.GetChatMessages)
 		authorized.GET("/api/:userid", httpHandler.GetuserId)
+		authorized.GET("/api/ws", httpHandler.WebsocketConnection)
 	}
 
 	if err := r.Run(); err != nil {

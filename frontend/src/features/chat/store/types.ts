@@ -1,4 +1,4 @@
-import type { Nullable, UID } from '@/shared/types';
+import type { Nullable, Nonce } from '@/shared/types';
 
 export type Action = {
   setContacts: (contacts: Person[]) => void;
@@ -11,7 +11,7 @@ export type ChatState = {
 };
 
 export type Person = {
-  uid: UID;
+  uid: Nonce;
   name: string;
   profilePicture: string;
   active: boolean;

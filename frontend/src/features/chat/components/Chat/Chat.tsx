@@ -6,22 +6,23 @@ import {
   MessageInput,
   MessageList,
 } from '@chatscope/chat-ui-kit-react';
-import { useEffect } from 'react';
+import { useEffect, type FC } from 'react';
 
 import { useChat } from '../../store';
-import { createChatApi } from '../../api';
-import { Contacts, Messages } from './components';
+import { Contacts, MessagesWrapper } from './components';
 import { getActiveUser } from './utils';
+import { createChatApi } from '../../api';
+import type { UserId } from '@/shared/types';
 
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 
-const MessagesWrapper = (props: { as?: typeof MessageList }) => {
-  return <Messages />;
+export type ChatProps = {
+  currentUserId: UserId;
 };
 
-export const Chat = () => {
+export const Chat: FC<ChatProps> = ({ currentUserId }) => {
   const chat = useChat();
-  const api = createChatApi();
+  const api = createChatApi(currentUserId);
 
   useEffect(() => {
     const fetchFriends = async () => {

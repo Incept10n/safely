@@ -10,7 +10,11 @@ import { getActiveUser } from '../utils';
 
 type MessageStyle = 'single' | 'first' | 'normal' | 'last' | 0 | 1 | 2 | 3;
 
-export const Messages = () => {
+export const MessagesWrapper = (_: { as?: typeof MessageList }) => {
+  return <Messages />;
+};
+
+const Messages = () => {
   const chat = useChat();
 
   const calculateMessagePosition = (

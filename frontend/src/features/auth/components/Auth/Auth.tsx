@@ -3,7 +3,8 @@ import { useAuth } from '../../store/store';
 import { auth } from '../../jwt';
 import type { UserId } from '@/shared/types';
 import { authStoreMapper } from '../../store';
-import { createAuthApi } from '../../api';
+import type { JwtUser } from '../../jwt/jwtService';
+import { AuthPage } from '../AuthPage/AuthPage';
 
 type ChatLike = {
   currentUserId: UserId;
@@ -15,10 +16,11 @@ export type AuthProps = {
 
 export const Auth: FC<AuthProps> = ({ ComponentOnAuth }) => {
   const authState = useAuth();
-  const authApi = createAuthApi();
 
-  if (!auth.isAuthenticated()) {
-    // get user info and set user
+  if (auth.isAuthenticated()) {
+    authState.setUser(
+      authStoreMapper.jwtUserToAuthUser(auth.getUser() as JwtUser),
+    );
   }
 
   if (!authState.user && auth.getUser()) {
@@ -26,7 +28,7 @@ export const Auth: FC<AuthProps> = ({ ComponentOnAuth }) => {
   }
 
   if (!authState.user) {
-    return <div>authorization page</div>;
+    return <AuthPage />;
   }
 
   return <ComponentOnAuth currentUserId={authState.user.userId} />;

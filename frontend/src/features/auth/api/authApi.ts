@@ -3,10 +3,12 @@ import { type LoginApiResponse } from './types';
 
 export const createAuthApi = () => {
   const login = async (login: string, password: string) => {
-    const response = await axios.get<LoginApiResponse>('/api/login', {
+    const response = await axios.post<LoginApiResponse>('/api/login', {
       login,
       password,
     });
+
+    return response.data;
   };
 
   const register = async (login: string, password: string) => {

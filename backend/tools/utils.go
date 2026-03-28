@@ -1,6 +1,9 @@
 package tools
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"safelyBackend/internal/global"
 	"strings"
@@ -74,4 +77,30 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func MakePartJsonMessage(sender string, message string) string {
+	type Message struct {
+		Sender    string `json:"sender"`
+		Message   string `json:"message"`
+		Timestamp string `json:"timestamp"`
+	}
+
+	unixTime := time.Now().Unix()
+	timestamp := fmt.Sprintf("%d", unixTime)
+
+	msg := Message{
+		Sender:    sender,
+		Message:   message,
+		Timestamp: timestamp,
+	}
+
+	jsonMsgBytes, err_makePartJson := json.Marshal(msg)
+
+	if err_makePartJson != nil {
+		fmt.Println("error:", err_makePartJson)
+		log.Fatal(err_makePartJson)
+	}
+
+	return string(jsonMsgBytes)
 }

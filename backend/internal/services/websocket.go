@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"safelyBackend/internal/database"
+	"safelyBackend/tools"
 	"strings"
 
 	"github.com/gorilla/websocket"
@@ -135,9 +136,9 @@ func validateAndProcessMessage(db *gorm.DB, ctx context.Context, conn *websocket
 
 	// Сохраняем сообщение в базу данных
 	messageInDb := chat.Messages
+	var messageInDbCut string
 	if len(messageInDb) >= 2 {
-		messageInDbCut := messageInDb[1 : len(messageInDb)-1]
-		fmt.Println(messageInDbCut)
+		messageInDbCut = messageInDb[1 : len(messageInDb)-1]
 	}
 
 	// Подготавливаем сообщение для отправки
@@ -147,14 +148,15 @@ func validateAndProcessMessage(db *gorm.DB, ctx context.Context, conn *websocket
 		SenderID: msg.SenderID,
 	}
 
-	// message := ChatMessage{
-	// 	Sender:    msg.SenderID,
-	// 	Message:   messageInDbCut + "," + outgoingMsg,
-	// 	Timestamp: time.Now().UTC(),
-	// }
-	// if err := db.Create(&message).Error; err != nil {
-	// 	return fmt.Errorf("failed to save message: %v", err)
-	// }
+	partJsonMessage := tools.MakePartJsonMessage(msg.SenderID, msg.Content)
+
+	chat.Messages = "[" + messageInDbCut + "," + partJsonMessage + "]"
+
+	fmt.Println(chat.Messages)
+
+	if err := db.Save(&chat).Error; err != nil {
+		return fmt.Errorf("failed to save message: %v", err)
+	}
 
 	// Отправляем сообщение всем подписчикам чата
 	broadcastMessage(msg.ChatID, outgoingMsg)

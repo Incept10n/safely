@@ -1,9 +1,10 @@
+import { Auth } from './features/auth';
 import { Chat } from './features/chat';
 
 export const App = () => {
   return (
     <div>
-      <Chat />
+      <Auth ComponentOnAuth={Chat} />
     </div>
   );
 };

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import styles from './AuthPage.module.scss';
 import { useAuth } from '../../store/store';
 import { auth } from '../../jwt';
 import { authStoreMapper } from '../../store';
 import { createAuthApi } from '../../api';
+
+import styles from './AuthPage.module.scss';
 
 const api = createAuthApi();
 

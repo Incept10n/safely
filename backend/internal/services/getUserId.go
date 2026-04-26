@@ -1,42 +1,50 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"safelyBackend/internal/database"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func HandleGetuserId(db *gorm.DB, c *gin.Context) {
+	userIdStr := c.Param("userid")
 
-	userId := c.Param("userid")
-
-	ctx := context.Background()
-
-	user, err := gorm.G[database.User](db).Where("id = ?", userId).First(ctx)
-
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "success",
-			"nonce":   user.Nonce,
-			"user_id": user.ID,
+	userId, err := strconv.ParseUint(userIdStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Invalid user ID format",
 		})
 		return
-	} else {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+	}
+
+	var user database.User
+	result := db.Where("id = ?", uint(userId)).First(&user)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"status":  "error",
-				"message": "user not found",
+				"message": "User not found",
 			})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status":  "error",
-				"message": "database error occurred",
-				"error":   err.Error(),
+				"message": "Database error occurred",
+				"error":   result.Error.Error(),
 			})
 		}
+		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"nonce":   user.Nonce,
+		"user_id": user.ID,
+		"name":    user.Name,
+	})
 }

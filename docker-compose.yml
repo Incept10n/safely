@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - safely-network
+    profiles:
+      - frontend
+      - fullstack
+      - all
+
+  app:
+    build: 
+      context: ./backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - safely-network
+    profiles:
+      - backend
+      - fullstack
+      - all
+
+  mysql:
+    image: mysql:8.0
+    container_name: safely-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - safely-network
+    profiles:
+      - database
+      - backend
+      - fullstack
+      - all
+
+volumes:
+  mysql_data:
+
+networks:
+  safely-network:
+    driver: bridge

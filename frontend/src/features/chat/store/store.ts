@@ -1,12 +1,15 @@
-import { create } from "zustand";
-
-import type { Action, ChatState } from "./types";
-import { generateDefaultChatState } from "./utils";
+import { create } from 'zustand';
+import type { Action, ChatState } from './types';
 
 export const useChat = create<ChatState & Action>((set) => ({
-  chat: generateDefaultChatState().chat,
-  contacts: generateDefaultChatState().contacts,
+  chat: null,
+  contacts: null,
+  loadingContacts: false,
+  loadingChat: false,
 
   setContacts: (contacts) => set(() => ({ contacts })),
   setCurrentChat: (chat) => set(() => ({ chat })),
+  setLoadingContacts: (isLoading) =>
+    set(() => ({ loadingContacts: isLoading })),
+  setLoadingChat: (isLoading) => set(() => ({ loadingChat: isLoading })),
 }));

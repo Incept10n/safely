@@ -10,7 +10,6 @@ import { useEffect, type FC } from 'react';
 
 import { useChat } from '../../store';
 import { Contacts, MessagesWrapper } from './components';
-import { getActiveUser } from './utils';
 import { createChatApi } from '../../api';
 import type { UserId } from '@/shared/types';
 
@@ -26,7 +25,9 @@ export const Chat: FC<ChatProps> = ({ currentUserId }) => {
 
   useEffect(() => {
     const fetchFriends = async () => {
+      chat.setLoadingContacts(true);
       const friends = await api.fetchFriends();
+      chat.setLoadingContacts(false);
 
       chat.setContacts(friends);
     };
@@ -34,24 +35,22 @@ export const Chat: FC<ChatProps> = ({ currentUserId }) => {
     fetchFriends();
   }, []);
 
+  const activeUser = chat.contacts
+    ? chat.contacts.find((user) => user.active)
+    : null;
+
   return (
     <MainContainer
       responsive
       style={{ width: 'calc(100vw - 16px)', height: 'calc(100vh - 16px)' }}
     >
       <Contacts />
-      {chat.chat && (
+      {chat.chat && activeUser && (
         <ChatContainer>
           <ConversationHeader>
             <ConversationHeader.Back />
-            <Avatar
-              name={getActiveUser(chat.contacts)?.name}
-              src={getActiveUser(chat.contacts)?.profilePicture}
-            />
-            <ConversationHeader.Content
-              info="Active 10 mins ago"
-              userName="Zoe"
-            />
+            <Avatar name={activeUser.name} src={activeUser.profilePicture} />
+            <ConversationHeader.Content info={activeUser.uid} userName="User" />
           </ConversationHeader>
           <MessagesWrapper as={MessageList} />
           <MessageInput placeholder="Type message here" />

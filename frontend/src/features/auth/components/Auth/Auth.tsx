@@ -1,4 +1,4 @@
-import type { ComponentType, FC } from 'react';
+import { useEffect, type ComponentType, type FC } from 'react';
 import { useAuth } from '../../store/store';
 import { auth } from '../../jwt';
 import type { UserId } from '@/shared/types';
@@ -17,15 +17,17 @@ export type AuthProps = {
 export const Auth: FC<AuthProps> = ({ ComponentOnAuth }) => {
   const authState = useAuth();
 
-  if (auth.isAuthenticated()) {
-    authState.setUser(
-      authStoreMapper.jwtUserToAuthUser(auth.getUser() as JwtUser),
-    );
-  }
+  useEffect(() => {
+    if (auth.isAuthenticated()) {
+      authState.setUser(
+        authStoreMapper.jwtUserToAuthUser(auth.getUser() as JwtUser),
+      );
+    }
 
-  if (!authState.user && auth.getUser()) {
-    authState.setUser(authStoreMapper.jwtUserToAuthUser(auth.getUser()!));
-  }
+    if (!authState.user && auth.getUser()) {
+      authState.setUser(authStoreMapper.jwtUserToAuthUser(auth.getUser()!));
+    }
+  }, []);
 
   if (!authState.user) {
     return <AuthPage />;

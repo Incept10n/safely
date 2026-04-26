@@ -13,7 +13,14 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.Use(cors.Default())
+
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: false,
+	}))
 
 	global.DB = database.Connect()
 
@@ -30,7 +37,7 @@ func main() {
 	authorized.Use(tools.AuthMiddleware())
 	{
 		authorized.GET("/api/chats", httpHandler.GetChatsuserId)
-		authorized.POST("/api/create-chat", httpHandler.CreateChat)
+		authorized.POST("/api/createchat", httpHandler.CreateChat)
 		authorized.GET("/api/chat/:chatid", httpHandler.GetChatMessages)
 		authorized.GET("/api/:userid", httpHandler.GetuserId)
 		authorized.GET("/api/ws", httpHandler.WebsocketConnection)

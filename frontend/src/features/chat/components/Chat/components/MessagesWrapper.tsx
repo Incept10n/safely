@@ -6,7 +6,6 @@ import {
   Message as MessageView,
   Avatar,
 } from '@chatscope/chat-ui-kit-react';
-import { getActiveUser } from '../utils';
 
 type MessageStyle = 'single' | 'first' | 'normal' | 'last' | 0 | 1 | 2 | 3;
 
@@ -51,9 +50,14 @@ const Messages = () => {
     return 'normal';
   };
 
+  const activeUser = chat.contacts
+    ? chat.contacts.find((user) => user.active)
+    : null;
+
   return (
     <MessageList typingIndicator={<TypingIndicator content="Zoe is typing" />}>
       {chat.chat &&
+        activeUser &&
         chat.chat.messages.map((message, index, messageArray) => (
           <MessageView
             key={index}
@@ -70,10 +74,7 @@ const Messages = () => {
             }}
           >
             {message.direction === 'incoming' && (
-              <Avatar
-                name={getActiveUser(chat.contacts)?.name}
-                src={getActiveUser(chat.contacts)?.profilePicture}
-              />
+              <Avatar name={activeUser.name} src={activeUser.profilePicture} />
             )}
           </MessageView>
         ))}

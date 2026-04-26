@@ -1,9 +1,9 @@
-import axios from 'axios';
-
 import { chatMocks } from './mock';
 import type { Message, Person } from '../store/types';
-import { appConfig } from '@/shared/constants';
+import { appConfig, randomPersonURL } from '@/shared/constants';
 import type { UserId } from '@/shared/types';
+import api from '@/shared/api';
+
 import type {
   CreateChatModel,
   CreateChatResponse,
@@ -20,19 +20,39 @@ export const createChatApi = (currentUserId: UserId) => {
       return await chatMocks.getUsers();
     }
 
-    const response = await axios.get<GetConversationsResponse>(
+    const response = await api.get<GetConversationsResponse>(
       `/api/chats?userId=${currentUserId}`,
     );
 
-    return response.data.chats.map(chatApiMapper.conversationToUser);
+    const contacts: Person[] = [];
+
+    for (const chat of response.data.chats) {
+      const otherUserId =
+        chat.User1 === currentUserId ? chat.User1 : chat.User2;
+      const contactInfoResponse = await api.get<GetUserInfoResponse>(
+        `/api/${otherUserId}`,
+      );
+
+      const contact: Person = {
+        profilePicture: randomPersonURL,
+        active: false,
+        chatId: chat.ID,
+        name: 'user',
+        uid: contactInfoResponse.data.nonce,
+      };
+
+      contacts.push(contact);
+    }
+
+    return contacts;
   };
 
-  const fetchMessages = async (chatId: string): Promise<Message[]> => {
+  const fetchMessages = async (chatId: number): Promise<Message[]> => {
     if (appConfig.MOCK_API) {
       return await chatMocks.getMessages();
     }
 
-    const response = await axios.get<GetConversationMessages>(
+    const response = await api.get<GetConversationMessages>(
       `/api/chat/${chatId}`,
     );
 
@@ -45,7 +65,7 @@ export const createChatApi = (currentUserId: UserId) => {
   };
 
   const getUserInfo = async (): Promise<GetUserInfoResponse> => {
-    const response = await axios.get<GetUserInfoResponse>(
+    const response = await api.get<GetUserInfoResponse>(
       `/api/${currentUserId}`,
     );
 
@@ -55,7 +75,7 @@ export const createChatApi = (currentUserId: UserId) => {
   const createChat = async (
     createChatModel: CreateChatModel,
   ): Promise<CreateChatResponse> => {
-    const response = await axios.post('/api/createchat', createChatModel);
+    const response = await api.post('/api/createchat', createChatModel);
 
     return response.data;
   };

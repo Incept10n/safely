@@ -1,8 +1,9 @@
+import { randomPersonURL } from '@/shared/constants';
 import type { JwtUser } from '../jwt/jwtService';
 import type { AuthUser } from './types';
 
 const jwtUserToAuthUser = (jwtUser: JwtUser): AuthUser => ({
-  logoUrl: '',
+  logoUrl: randomPersonURL,
   name: jwtUser.name,
   userId: jwtUser.id.toString(),
   nonce: '',

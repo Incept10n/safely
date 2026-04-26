@@ -1,9 +1,10 @@
-import axios from 'axios';
+import api from '@/shared/api';
+
 import { type LoginApiResponse } from './types';
 
 export const createAuthApi = () => {
   const login = async (login: string, password: string) => {
-    const response = await axios.post<LoginApiResponse>('/api/login', {
+    const response = await api.post<LoginApiResponse>('/api/login', {
       login,
       password,
     });
@@ -13,7 +14,7 @@ export const createAuthApi = () => {
 
   const register = async (login: string, password: string) => {
     try {
-      await axios.post('/api/register', { login, password });
+      await api.post('/api/register', { login, password });
 
       return true;
     } catch {

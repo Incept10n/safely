@@ -11,9 +11,8 @@ import (
 	"safelyBackend/tools"
 	"strings"
 
-	"github.com/gorilla/websocket"
-
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 )
 
@@ -122,7 +121,9 @@ func HandleWebsocketConnection(db *gorm.DB, c *gin.Context) {
 	}
 }
 
-func validateAndProcessMessage(db *gorm.DB, ctx context.Context, conn *websocket.Conn, msg IncomingMessage, userId string) error {
+func validateAndProcessMessage(
+	db *gorm.DB, ctx context.Context, conn *websocket.Conn, msg IncomingMessage, userId string,
+) error {
 	// Проверяем, что отправитель - текущий пользователь
 	if msg.SenderID != userId {
 		return fmt.Errorf("sender ID mismatch")

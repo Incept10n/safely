@@ -1,13 +1,6 @@
 import type { UserId } from '@/shared/types';
-import type { Message, Person } from '../store/types';
-import type { Conversation, ResponseMessage } from './types';
-
-const conversationToUser = (conversation: Conversation): Person => ({
-  active: false,
-  name: conversation.User2,
-  profilePicture: '',
-  uid: conversation.ID.toString(),
-});
+import type { Message } from '../store/types';
+import type { ResponseMessage } from './types';
 
 const responseMessageToViewMessage = (
   responseMessage: ResponseMessage,
@@ -25,6 +18,5 @@ const createResponseMessageToViewMessage =
     responseMessageToViewMessage(responseMessage, currentUserId);
 
 export const chatApiMapper = {
-  conversationToUser,
   createResponseMessageToViewMessage,
 };

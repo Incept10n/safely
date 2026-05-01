@@ -91,4 +91,8 @@ export const auth = {
 
     return undefined;
   },
+
+  getToken() {
+    return getToken();
+  },
 };

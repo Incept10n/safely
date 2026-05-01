@@ -52,7 +52,7 @@ func HandleWebsocketConnection(db *gorm.DB, c *gin.Context) {
 	}()
 
 	// Получаем userID из запроса
-	userId := c.Query("userid")
+	userId := c.Query("userId")
 	if userId == "" {
 		conn.WriteMessage(websocket.TextMessage, []byte("userID required"))
 		return
@@ -61,8 +61,13 @@ func HandleWebsocketConnection(db *gorm.DB, c *gin.Context) {
 	ctx := context.Background()
 
 	// Проверка JWT токена
-	authHeader := c.GetHeader("Authorization")
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	// browser's websocket api doesn't support sending headers during initial handshake
+	tokenString := c.Query("token")
+	if tokenString == "" {
+		authHeader := c.GetHeader("Authorization")
+		tokenString = strings.TrimPrefix(authHeader, "Bearer ")
+	}
+
 	partsJWT := strings.Split(tokenString, ".")
 	payload := partsJWT[1]
 	var decodedPayload []byte

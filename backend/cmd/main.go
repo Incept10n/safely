@@ -28,19 +28,20 @@ func main() {
 	r.POST("/api/register", httpHandler.Register)
 	r.POST("/api/login", httpHandler.Login)
 
+	r.GET("/api/ws", httpHandler.WebsocketConnection)
+
 	err := global.DB.AutoMigrate(&database.User{}, &database.PersonalChat{})
 	if err != nil {
 		panic("failed to migrate database")
 	}
 
-	authorized := r.Group("/")
+	authorized := r.Group("/api")
 	authorized.Use(tools.AuthMiddleware())
 	{
-		authorized.GET("/api/chats", httpHandler.GetChatsuserId)
-		authorized.POST("/api/createchat", httpHandler.CreateChat)
-		authorized.GET("/api/chat/:chatid", httpHandler.GetChatMessages)
-		authorized.GET("/api/:userid", httpHandler.GetuserId)
-		authorized.GET("/api/ws", httpHandler.WebsocketConnection)
+		authorized.GET("/chats", httpHandler.GetChatsuserId)
+		authorized.POST("/createchat", httpHandler.CreateChat)
+		authorized.GET("/chat/:chatid", httpHandler.GetChatMessages)
+		authorized.GET("/:userid", httpHandler.GetuserId)
 	}
 
 	if err := r.Run(); err != nil {

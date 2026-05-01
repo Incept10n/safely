@@ -1,13 +1,14 @@
 import { useChat } from '@/features/chat/store';
-import type { Message } from '@/features/chat/store/types';
 import {
   MessageList,
   TypingIndicator,
   Message as MessageView,
   Avatar,
 } from '@chatscope/chat-ui-kit-react';
-
-type MessageStyle = 'single' | 'first' | 'normal' | 'last' | 0 | 1 | 2 | 3;
+import { calculateMessagePosition } from './utils';
+import { useAuth } from '@/features/auth/store';
+import { auth } from '@/features/auth/jwt';
+import { useWebSocket } from '../hooks';
 
 export const MessagesWrapper = (_: { as?: typeof MessageList }) => {
   return <Messages />;
@@ -15,40 +16,17 @@ export const MessagesWrapper = (_: { as?: typeof MessageList }) => {
 
 const Messages = () => {
   const chat = useChat();
+  const { user } = useAuth();
 
-  const calculateMessagePosition = (
-    previousMessage: Message,
-    currentMessage: Message,
-    nextMessage: Message,
-  ): MessageStyle => {
-    if (
-      (!previousMessage ||
-        currentMessage.direction !== previousMessage.direction) &&
-      (!nextMessage || currentMessage.direction !== nextMessage.direction)
-    ) {
-      return 'single';
-    }
+  const token = auth.getToken();
 
-    if (
-      (!previousMessage ||
-        currentMessage.direction !== previousMessage.direction) &&
-      nextMessage &&
-      currentMessage.direction === nextMessage.direction
-    ) {
-      return 'first';
-    }
+  if (!user || !token) return;
 
-    if (
-      previousMessage &&
-      currentMessage.direction === previousMessage.direction &&
-      nextMessage &&
-      currentMessage.direction !== nextMessage.direction
-    ) {
-      return 'last';
-    }
-
-    return 'normal';
-  };
+  const webSocketService = useWebSocket(
+    import.meta.env.VITE_WS_URL,
+    user.userId,
+    token,
+  );
 
   const activeUser = chat.contacts
     ? chat.contacts.find((user) => user.active)

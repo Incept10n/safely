@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"safelyBackend/internal/database"
-	"safelyBackend/tools"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -129,42 +129,49 @@ func HandleWebsocketConnection(db *gorm.DB, c *gin.Context) {
 func validateAndProcessMessage(
 	db *gorm.DB, ctx context.Context, conn *websocket.Conn, msg IncomingMessage, userId string,
 ) error {
-	// Проверяем, что отправитель - текущий пользователь
 	if msg.SenderID != userId {
 		return fmt.Errorf("sender ID mismatch")
 	}
 
-	// Проверяем существование чата
 	var chat database.PersonalChat
-	if err_6 := db.Where("id = ? AND (user1 = ? OR user2 = ?)", msg.ChatID, userId, userId).First(&chat).Error; err_6 != nil {
+	if err := db.Where("id = ? AND (user1 = ? OR user2 = ?)", msg.ChatID, userId, userId).First(&chat).Error; err != nil {
 		return fmt.Errorf("chat not found or access denied")
 	}
 
-	// Сохраняем сообщение в базу данных
-	messageInDb := chat.Messages
-	var messageInDbCut string
-	if len(messageInDb) >= 2 {
-		messageInDbCut = messageInDb[1 : len(messageInDb)-1]
+	// Parse existing messages
+	var messages []map[string]interface{}
+	if chat.Messages != "" {
+		if err := json.Unmarshal([]byte(chat.Messages), &messages); err != nil {
+			// If empty/invalid, start fresh
+			messages = []map[string]interface{}{}
+		}
 	}
 
-	// Подготавливаем сообщение для отправки
+	// Append new message
+	newMessage := map[string]interface{}{
+		"sender":    msg.SenderID,
+		"message":   msg.Content,
+		"timestamp": fmt.Sprintf("%d", time.Now().Unix()),
+	}
+	messages = append(messages, newMessage)
+
+	// Serialize back to JSON
+	messagesJSON, err := json.Marshal(messages)
+	if err != nil {
+		return fmt.Errorf("failed to marshal messages: %v", err)
+	}
+	chat.Messages = string(messagesJSON)
+
+	if err := db.Save(&chat).Error; err != nil {
+		return fmt.Errorf("failed to save message: %v", err)
+	}
+
 	outgoingMsg := OutgoingMessage{
 		ChatID:   msg.ChatID,
 		Content:  msg.Content,
 		SenderID: msg.SenderID,
 	}
 
-	partJsonMessage := tools.MakePartJsonMessage(msg.SenderID, msg.Content)
-
-	chat.Messages = "[" + messageInDbCut + "," + partJsonMessage + "]"
-
-	fmt.Println(chat.Messages)
-
-	if err := db.Save(&chat).Error; err != nil {
-		return fmt.Errorf("failed to save message: %v", err)
-	}
-
-	// Отправляем сообщение всем подписчикам чата
 	broadcastMessage(msg.ChatID, outgoingMsg)
 
 	return nil

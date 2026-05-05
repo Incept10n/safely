@@ -8,7 +8,6 @@ import {
 import { calculateMessagePosition } from './utils';
 import { useAuth } from '@/features/auth/store';
 import { auth } from '@/features/auth/jwt';
-import { useWebSocket } from '../hooks';
 
 export const MessagesWrapper = (_: { as?: typeof MessageList }) => {
   return <Messages />;
@@ -21,12 +20,6 @@ const Messages = () => {
   const token = auth.getToken();
 
   if (!user || !token) return;
-
-  const webSocketService = useWebSocket(
-    import.meta.env.VITE_WS_URL,
-    user.userId,
-    token,
-  );
 
   const activeUser = chat.contacts
     ? chat.contacts.find((user) => user.active)

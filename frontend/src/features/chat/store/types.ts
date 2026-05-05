@@ -6,6 +6,8 @@ export type Action = {
 
   setLoadingContacts: (isLoading: boolean) => void;
   setLoadingChat: (isLoading: boolean) => void;
+
+  addMessage: (message: Message) => void;
 };
 
 export type ChatState = {

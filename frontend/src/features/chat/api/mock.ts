@@ -8,6 +8,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/lilly-aj6lnGPk.svg',
       active: false,
+      chatId: 1,
     },
     {
       uid: '2',
@@ -15,6 +16,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/joe-v8Vy3KOS.svg',
       active: false,
+      chatId: 2,
     },
     {
       uid: '3',
@@ -22,6 +24,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg',
       active: false,
+      chatId: 3,
     },
     {
       uid: '4',
@@ -29,6 +32,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/kai-5wHRJGb2.svg',
       active: false,
+      chatId: 4,
     },
     {
       uid: '5',
@@ -36,6 +40,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/akane-MXhWvx63.svg',
       active: false,
+      chatId: 5,
     },
     {
       uid: '6',
@@ -43,6 +48,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/eliot-JNkqSAth.svg',
       active: false,
+      chatId: 6,
     },
     {
       uid: '7',
@@ -50,6 +56,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg',
       active: true,
+      chatId: 7,
     },
     {
       uid: '8',
@@ -57,6 +64,7 @@ const getUsers = (): Promise<Person[]> =>
       profilePicture:
         'https://chatscope.io/storybook/react/assets/patrik-yC7svbAR.svg',
       active: false,
+      chatId: 8,
     },
   ]);
 

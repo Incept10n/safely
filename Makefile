@@ -1,4 +1,4 @@
-.PHONY: db backend frontend fullstack down clean
+.PHONY: db backend frontend fullstack down clean build-all build-frontend build-backend clean-start all
 
 db:
 	docker-compose --profile database up
@@ -15,6 +15,11 @@ fullstack:
 all:
 	docker-compose --profile all up
 
+clean-start:
+	make clean 
+	make build-all 
+	make all
+
 down:
 	docker-compose --profile all down
 
@@ -23,13 +28,16 @@ clean:
 	docker volume rm safely_mysql_data 2>/dev/null || true
 	docker volume prune -f
 
-rebuild-backend:
-	docker-compose --profile backend build app
-	docker-compose --profile backend up
+build-all: 
+	make build-backend 
+	make build-frontend
 
-rebuild-frontend:
-	docker-compose --profile frontend build frontend
-	docker-compose --profile frontend up
+build-backend:
+	docker-compose --profile backend build app
+
+build-frontend:
+	# docker compose --profile frontend build frontend
+	docker compose --profile frontend --profile backend build frontend
 
 logs:
 	docker-compose logs -f

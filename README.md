@@ -1,14 +1,14 @@
 To launch the app use 
 
-make clean       # If something goes wrong
+```make clean```       If something goes wrong
 
-make db          # Start database only
-make backend     # Start backend + database
-make frontend    # Start frontend only
-make fullstack   # Start everything
+```make db```          Start database only<br>
+```make backend```     Start backend + database<br>
+```make frontend```    Start frontend only<br>
+```make fullstack```   Start everything<br>
 
-make down        # Stop everything
-make clean       # Stop everything and remove volumes
+```make down```        Stop everything<br>
+```make clean```       Stop everything and remove volumes<br>
 
-rebuild-backend  # Rebuilds backend
-rebuild-frontend # Rebuilds frontend
+```make rebuild-backend``` Rebuilds backend<br>
+```rebuild-frontend``` Rebuilds frontend

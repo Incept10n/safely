@@ -1,7 +1,6 @@
 import { useChat } from '@/features/chat/store';
 import {
   MessageList,
-  TypingIndicator,
   Message as MessageView,
   Avatar,
 } from '@chatscope/chat-ui-kit-react';
@@ -26,7 +25,7 @@ const Messages = () => {
     : null;
 
   return (
-    <MessageList typingIndicator={<TypingIndicator content="Zoe is typing" />}>
+    <MessageList>
       {chat.chat &&
         activeUser &&
         chat.chat.messages.map((message, index, messageArray) => (

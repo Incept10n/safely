@@ -26,9 +26,13 @@ export const createChatApi = (currentUserId: UserId) => {
 
     const contacts: Person[] = [];
 
+    if (!response.data.chats) return contacts;
+
     for (const chat of response.data.chats) {
       const otherUserId =
-        chat.User1 === currentUserId ? chat.User1 : chat.User2;
+        parseInt(chat.User1) === parseInt(currentUserId)
+          ? chat.User2
+          : chat.User1;
       const contactInfoResponse = await api.get<GetUserInfoResponse>(
         `/api/${otherUserId}`,
       );

@@ -1,4 +1,4 @@
-import type { Nonce, UserId } from '@/shared/types';
+import type { Nonce, Nullable, UserId } from '@/shared/types';
 
 // docs on message string
 // this is json string that needs to be parsed like this
@@ -25,7 +25,7 @@ export type Conversation = {
 
 export type GetConversationsResponse = {
   status: 'success';
-  chats: Conversation[];
+  chats: Nullable<Conversation[]>;
 };
 
 export type CreateChatResponse = {
